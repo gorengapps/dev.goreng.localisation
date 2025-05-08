@@ -36,7 +36,7 @@ namespace Localisation.Plugin.POEditor.API
         /// <param name="url">The full URL of the file to download.</param>
         /// <param name="path">Local filesystem path where the downloaded file will be saved.</param>
         /// <returns>A task representing the asynchronous download and file write operation.</returns>
-        public async Task DownloadFile(string url, string path)
+        public async Awaitable DownloadFile(string url, string path)
         {
             var bytes = await HttpEngine
                 .Make(url)
@@ -53,13 +53,13 @@ namespace Localisation.Plugin.POEditor.API
         /// A task that completes with a <see cref="PoEditorProjectResponse"/>
         /// containing the project list result.
         /// </returns>
-        public async Task<PoEditorProjectResponse> ListProjects()
+        public async Awaitable<PoEditorProjectResponse> ListProjects()
         {
             var path = "/projects/list";
 
             var result = await HttpEngine.Make(_baseUrl + path)
                 .SetMethod(HttpMethod.Post)
-                .SetTransformer(FormEncodedTransformer.Transform!)
+                .SetTransformer(FormEncodedTransformer.Transform)
                 .SetHeader("Content-Type", "application/x-www-form-urlencoded")
                 .SetBody(new PoeEditorToken { api_token = _apiKey })
                 .Send();
@@ -78,7 +78,7 @@ namespace Localisation.Plugin.POEditor.API
         /// A task that completes with an <see cref="ExportResponse"/>
         /// containing download information and metadata.
         /// </returns>
-        public async Task<Result<ExportResponse, Exception>> ExportLanguage(string language, string projectId)
+        public async Awaitable<Result<ExportResponse, Exception>> ExportLanguage(string language, string projectId)
         {
             var path = $"/projects/export";
 
@@ -92,7 +92,7 @@ namespace Localisation.Plugin.POEditor.API
 
             var result = await HttpEngine.Make(_baseUrl + path)
                 .SetMethod(HttpMethod.Post)
-                .SetTransformer(FormEncodedTransformer.Transform!)
+                .SetTransformer(FormEncodedTransformer.Transform)
                 .SetHeader("Content-Type", "application/x-www-form-urlencoded")
                 .SetBody(arguments)
                 .Send();
