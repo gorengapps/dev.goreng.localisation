@@ -38,7 +38,7 @@ namespace DesignSystem.Editor.Window
         private List<PoEditorProject> _projects;
         private string _stringTableName;
         
-        private readonly PoEditorApi _api = new PoEditorApi();
+        private readonly PoEditorApi _api = new();
         
         [MenuItem("Framework/Import Localisation via PoEditor")]
         public static void ShowWindow()
@@ -47,16 +47,22 @@ namespace DesignSystem.Editor.Window
             window.titleContent = new GUIContent("POEditor Language Importer");
         }
 
-        private void UpdateLocales()
+        private async Awaitable FetchLocales()
         {
-            LocalizationSettings.Instance
-                .GetAvailableLocales();
-            
-            _locales = LocalizationSettings.Instance
+            var instance = LocalizationSettings.Instance;
+
+            await instance
+                .GetInitializationOperation()
+                .Task;
+
+            _locales = instance
                 .GetAvailableLocales()
                 .Locales
                 .Select(x => x.Identifier.Code)
                 .ToList();
+            
+            // Update data
+            _cultureSelector.choices = _locales;
         }
 
         private void OnDestroy()
@@ -67,10 +73,8 @@ namespace DesignSystem.Editor.Window
             _tableSelector.UnregisterCallback<ChangeEvent<string>>(OnConfigurationChanged);
         }
 
-        private void OnEnable()
+        private async void OnEnable()
         {
-            UpdateLocales();
-            
             var configuration = EditorPrefs.GetString(_editorPrefsKey);
             
             if (string.IsNullOrEmpty(configuration))
@@ -79,10 +83,18 @@ namespace DesignSystem.Editor.Window
             }
             
             _configuration = JsonConvert.DeserializeObject<PoEditorApiConfiguration>(configuration);
-            _api.SetCredentials(_configuration.apiKey);
+
+            if (!_configuration.isValid)
+            {
+                return;
+            }
             
-            UpdateLocales();
-            FetchProjects();
+            _api.SetCredentials(_configuration.apiKey);
+
+            await FetchProjects();
+            await FetchLocales();
+
+            FetchTables();
         }
 
         public void CreateGUI()
@@ -106,10 +118,7 @@ namespace DesignSystem.Editor.Window
             _tableSelector = root.Q<DropdownField>("TableSelector");
             
             _actionLabel = root.Q<Label>("ActionLabel");
-           
             
-            // Update data
-            _cultureSelector.choices = _locales;
             _importButton.clicked += OnImportButtonClicked;
             
             // Set Configuration
@@ -160,7 +169,7 @@ namespace DesignSystem.Editor.Window
             _tableSelector.choices = strings;
         }
 
-        private async void FetchProjects()
+        private async Awaitable FetchProjects()
         {
             try
             {
@@ -171,8 +180,6 @@ namespace DesignSystem.Editor.Window
                 _projectSelector.choices = _projects
                     .Select(x => x.name)
                     .ToList();
-                
-                FetchTables();
             }
             catch(Exception e)
             {
@@ -215,6 +222,12 @@ namespace DesignSystem.Editor.Window
                     
                 _actionLabel.text = "Waiting for action";
                 _importButton.SetEnabled(true);
+                
+                EditorUtility.DisplayDialog(
+                    $"Completed Import {language}", 
+                    $"Successfully imported {table.Values.Count} entry/entries into the selected table", 
+                    "Ok"
+                );
             }
             catch (Exception e)
             {
