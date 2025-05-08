@@ -1,6 +1,6 @@
 {
   "name": "dev.goreng.localisation",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "displayName": "Localisation System",
   "description": "An easy way to do localisation in Unity using external providers",
   "unity": "6000.0",
