@@ -10,7 +10,7 @@
     "com.unity.textmeshpro" :"3.0.6",
     "com.unity.localization": "1.5.4",
     "com.unity.nuget.newtonsoft-json": "3.2.1",
-    "dev.goreng.http": "0.0.4"
+    "dev.goreng.http": "0.0.5"
   },
   "author": {
     "name": "Jason Meulenhoff",
