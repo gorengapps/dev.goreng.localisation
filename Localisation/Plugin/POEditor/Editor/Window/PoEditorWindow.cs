@@ -186,6 +186,7 @@ namespace DesignSystem.Editor.Window
             {
                 _actionLabel.text = "Fetching language files from POEditor";
                 _importButton.SetEnabled(false);
+                
                 var language = _locales[_cultureSelector.index];
                 var selectedProject = _projects[_projectSelector.index];
                 var value = await _api.ExportLanguage(language, selectedProject.id);
@@ -202,14 +203,18 @@ namespace DesignSystem.Editor.Window
                 var collection = LocalizationEditorSettings.GetStringTableCollection(_stringTableName);
                 var table = collection.GetTable(language) as StringTable;
 
-                if (table != null)
-                { 
-                    _actionLabel.text = "Importing strings into table";
-                    Xliff.ImportFileIntoTable(path, table);
-                    
-                    _actionLabel.text = "Waiting for action";
-                    _importButton.SetEnabled(true);
+                if (table == null)
+                {
+                    return;
                 }
+
+                collection.ClearAllEntries();
+                    
+                _actionLabel.text = "Importing strings into table";
+                Xliff.ImportFileIntoTable(path, table);
+                    
+                _actionLabel.text = "Waiting for action";
+                _importButton.SetEnabled(true);
             }
             catch (Exception e)
             {

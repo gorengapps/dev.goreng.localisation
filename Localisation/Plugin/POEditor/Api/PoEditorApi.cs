@@ -19,7 +19,7 @@ namespace Localisation.Plugin.POEditor.API
     {
         private const string _baseUrl = "https://api.poeditor.com/v2";
 
-        private string _apiKey;
+        private string? _apiKey;
 
         /// <summary>
         /// Sets the API key for authenticating with the POEditor API.
@@ -59,7 +59,7 @@ namespace Localisation.Plugin.POEditor.API
 
             var result = await HttpEngine.Make(_baseUrl + path)
                 .SetMethod(HttpMethod.Post)
-                .SetTransformer(FormEncodedTransformer.Transform)
+                .SetTransformer(FormEncodedTransformer.Transform!)
                 .SetHeader("Content-Type", "application/x-www-form-urlencoded")
                 .SetBody(new PoeEditorToken { api_token = _apiKey })
                 .Send();
@@ -92,7 +92,7 @@ namespace Localisation.Plugin.POEditor.API
 
             var result = await HttpEngine.Make(_baseUrl + path)
                 .SetMethod(HttpMethod.Post)
-                .SetTransformer(FormEncodedTransformer.Transform)
+                .SetTransformer(FormEncodedTransformer.Transform!)
                 .SetHeader("Content-Type", "application/x-www-form-urlencoded")
                 .SetBody(arguments)
                 .Send();
