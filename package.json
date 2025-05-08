@@ -1,0 +1,20 @@
+{
+  "name": "dev.goreng.localisation",
+  "version": "0.0.4",
+  "displayName": "Localisation System",
+  "description": "An easy way to do localisation in Unity using external providers",
+  "unity": "6000.0",
+  "unityRelease": "40f1",
+  "changelogUrl": "",
+  "dependencies": {
+    "com.unity.textmeshpro" :"3.0.6",
+    "com.unity.localization": "1.5.4",
+    "com.unity.nuget.newtonsoft-json": "3.2.1",
+    "dev.goreng.http": "0.0.4"
+  },
+  "author": {
+    "name": "Jason Meulenhoff",
+    "email": "nasi@goreng.dev",
+    "url": "https://packages.goreng.dev"
+  }
+}
