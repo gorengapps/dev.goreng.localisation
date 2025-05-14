@@ -1,6 +1,6 @@
-namespace UnityEngine.Networking
+namespace Localisation
 {
-    internal class PoEditorApiConfiguration
+    public class PoEditorApiConfiguration
     {
         public string apiKey;
 

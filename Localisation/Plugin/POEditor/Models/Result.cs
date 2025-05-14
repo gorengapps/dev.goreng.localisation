@@ -2,7 +2,7 @@
 using System;
 
 
-namespace UnityEngine.Networking
+namespace Localisation
 {
     public class Result<T, E> where E : Exception
     {

@@ -6,7 +6,7 @@ using UnityEditor.Localization;
 using UnityEngine;
 using UnityEngine.Localization.Tables;
 
-namespace Localisation
+namespace Localisation.Editor
 {
     /// <summary>
     /// Custom inspector for localised text mesh pros

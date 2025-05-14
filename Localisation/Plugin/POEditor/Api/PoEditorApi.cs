@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Localisation.Plugin.POEditor.API
+namespace Localisation
 {
     /// <summary>
     /// Client for interacting with the POEditor API.
