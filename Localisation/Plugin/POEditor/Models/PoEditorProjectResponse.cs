@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace UnityEngine.Networking
+namespace Localisation
 {
     public class PoEditorProjectResponse
     {
