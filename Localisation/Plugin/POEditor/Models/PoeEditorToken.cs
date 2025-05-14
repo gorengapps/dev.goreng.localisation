@@ -1,4 +1,4 @@
-﻿namespace UnityEngine.Networking
+﻿namespace Localisation
 {
     public struct PoeEditorToken
     {

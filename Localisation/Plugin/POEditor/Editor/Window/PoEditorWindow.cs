@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Localisation.Plugin.POEditor.API;
 using Newtonsoft.Json;
 using UnityEditor;
 using UnityEditor.Localization;
@@ -9,10 +8,9 @@ using UnityEditor.Localization.Plugins.XLIFF;
 using UnityEngine;
 using UnityEngine.Localization.Settings;
 using UnityEngine.Localization.Tables;
-using UnityEngine.Networking;
 using UnityEngine.UIElements;
 
-namespace DesignSystem.Editor.Window
+namespace Localisation.Editor.Plugin
 {
     public class PoEditorWindow: EditorWindow
     {
