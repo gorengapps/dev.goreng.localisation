@@ -213,7 +213,7 @@ namespace Localisation.Editor.Plugin
                     return;
                 }
 
-                collection.ClearAllEntries();
+                table.Clear();
                     
                 _actionLabel.text = "Importing strings into table";
                 Xliff.ImportFileIntoTable(path, table);
