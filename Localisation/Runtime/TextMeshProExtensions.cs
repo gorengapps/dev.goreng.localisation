@@ -1,4 +1,5 @@
 ﻿using System;
+using Framework.Events;
 using TMPro;
 using UnityEngine.Localization;
 
@@ -16,6 +17,9 @@ namespace Localisation.Plugin
         private readonly TextMeshProUGUI _text;
         private readonly LocalizedString _localized;
         private object[] _args;
+
+        private readonly BaseEventProducer<bool> _onStringRefreshedEventProducer = new();
+        public IEventListener<bool> onStringRefreshed => _onStringRefreshedEventProducer.listener;
         
         /// <summary>
         /// Creates a new formatter for the given TextMeshProUGUI, binding it to the specified entry key
@@ -68,13 +72,17 @@ namespace Localisation.Plugin
         // and applies string.Format with the current arguments.
         private void UpdateText(string raw)
         {
-            if (raw == null) return;
-
-            string pattern = raw;
+            if (raw == null)
+            {
+                return;
+            }
+            
+            var pattern = raw;
             for (int i = 0; i < _args.Length; i++)
                 pattern = ReplaceFirst(pattern, "%@", "{" + i + "}");
 
             _text.text = string.Format(pattern, _args);
+            _onStringRefreshedEventProducer.Publish(this, true);
         }
 
         // Replaces the first occurrence of 'search' in 'text' with 'replace'.
