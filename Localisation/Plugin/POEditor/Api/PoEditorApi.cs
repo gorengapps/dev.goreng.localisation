@@ -20,6 +20,7 @@ namespace Localisation
         private const string _baseUrl = "https://api.poeditor.com/v2";
 
         private string? _apiKey;
+        private readonly HttpEngine _httpEngine = new HttpEngine();
 
         /// <summary>
         /// Sets the API key for authenticating with the POEditor API.
@@ -38,7 +39,7 @@ namespace Localisation
         /// <returns>A task representing the asynchronous download and file write operation.</returns>
         public async Awaitable DownloadFile(string url, string path)
         {
-            var bytes = await HttpEngine
+            var bytes = await _httpEngine
                 .Make(url)
                 .SetByteOutput()
                 .Send();
@@ -57,7 +58,7 @@ namespace Localisation
         {
             var path = "/projects/list";
 
-            var result = await HttpEngine.Make(_baseUrl + path)
+            var result = await _httpEngine.Make(_baseUrl + path)
                 .SetMethod(HttpMethod.Post)
                 .SetTransformer(FormEncodedTransformer.Transform)
                 .SetHeader("Content-Type", "application/x-www-form-urlencoded")
@@ -90,7 +91,7 @@ namespace Localisation
                 type = "xliff_1_2",
             };
 
-            var result = await HttpEngine.Make(_baseUrl + path)
+            var result = await _httpEngine.Make(_baseUrl + path)
                 .SetMethod(HttpMethod.Post)
                 .SetTransformer(FormEncodedTransformer.Transform)
                 .SetHeader("Content-Type", "application/x-www-form-urlencoded")
