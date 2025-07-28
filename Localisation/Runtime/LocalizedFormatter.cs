@@ -1,5 +1,6 @@
 ﻿using System;
 using Framework.Events;
+using Framework.Events.Extensions;
 using TMPro;
 using UnityEngine.Localization;
 
@@ -11,13 +12,10 @@ namespace Localisation.Plugin
     /// </summary>
     public class LocalizedFormatter : IDisposable
     {
-        // Static field to hold the selected table collection for all formatters.
-        private static string _stringTableCollection;
-        
         private readonly TextMeshProUGUI _text;
-        private readonly LocalizedString _localized;
-        private object[] _args;
+        private readonly LocaleString _localeString;
 
+        private readonly DisposeBag _disposeBag = new();
         private readonly BaseEventProducer<bool> _onStringRefreshedEventProducer = new();
         public IEventListener<bool> onStringRefreshed => _onStringRefreshedEventProducer.listener;
         
@@ -32,10 +30,13 @@ namespace Localisation.Plugin
         public LocalizedFormatter(TextMeshProUGUI text, string entry, object[] args)
         {
             _text = text ?? throw new ArgumentNullException(nameof(text));
-            _args = args ?? Array.Empty<object>();
-            _localized = new LocalizedString(_stringTableCollection, entry ?? throw new ArgumentNullException(nameof(entry)));
-            _localized.StringChanged += UpdateText;
-            _localized.RefreshString();
+            
+            _localeString= new LocaleString(entry, args)
+                .AddToDisposables(_disposeBag);
+            
+            _localeString.onStringRefreshed
+                .Subscribe(UpdateText)
+                .AddToDisposables(_disposeBag);
         }
 
         /// <summary>
@@ -43,19 +44,7 @@ namespace Localisation.Plugin
         /// </summary>
         public void Dispose()
         {
-            _localized.StringChanged -= UpdateText;
-        }
-
-        /// <summary>
-        /// Sets the static string table collection name to use for all new formatters.
-        /// Must be called before creating any LocalizedFormatter instances.
-        /// </summary>
-        /// <param name="tableCollection">The name of the string table collection to use.</param>
-        public static void SetStringTableCollection(string tableCollection)
-        {
-            if (string.IsNullOrEmpty(tableCollection))
-                throw new ArgumentException("Table collection name cannot be null or empty.", nameof(tableCollection));
-            _stringTableCollection = tableCollection;
+            _disposeBag.Dispose();
         }
         
         /// <summary>
@@ -64,34 +53,15 @@ namespace Localisation.Plugin
         /// <param name="args">The new array of objects to replace placeholders.</param>
         public void SetArguments(params object[] args)
         {
-            _args = args ?? Array.Empty<object>();
-            _localized.RefreshString();
+            _localeString.SetArguments(args);
         }
 
         // Internal callback: replaces each "%@" in the raw localized string with indexed placeholders
         // and applies string.Format with the current arguments.
-        private void UpdateText(string raw)
+        private void UpdateText(object sender, string text)
         {
-            if (raw == null)
-            {
-                return;
-            }
-            
-            var pattern = raw;
-            for (int i = 0; i < _args.Length; i++)
-                pattern = ReplaceFirst(pattern, "%@", "{" + i + "}");
-
-            _text.text = string.Format(pattern, _args);
+            _text.text = text;
             _onStringRefreshedEventProducer.Publish(this, true);
-        }
-
-        // Replaces the first occurrence of 'search' in 'text' with 'replace'.
-        private static string ReplaceFirst(string text, string search, string replace)
-        {
-            int idx = text.IndexOf(search, StringComparison.Ordinal);
-            return idx < 0
-                ? text
-                : text.Substring(0, idx) + replace + text.Substring(idx + search.Length);
         }
     }
 
