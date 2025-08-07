@@ -10,7 +10,7 @@ namespace Localisation.Plugin
         private string _key;
         private object[] _args;
         private readonly LocalizedString _localizedString;
-        private readonly BaseEventProducer<string> _onStringRefreshedEventProducer = new();
+        private readonly BaseEventProducer<string> _onStringRefreshedEventProducer = new(true);
         
         public IEventListener<string> onStringRefreshed => _onStringRefreshedEventProducer.listener;
         
