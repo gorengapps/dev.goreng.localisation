@@ -11,6 +11,19 @@ using UnityEngine.Networking;
 
 namespace Localisation
 {
+    internal static class Utils
+    {
+        public static async Task AsTask(this Awaitable a)
+        {
+            await a;
+        }
+
+        public static async Task<T> AsTask<T>(this Awaitable<T> a)
+        {
+            return await a;
+        }
+    }
+    
     /// <summary>
     /// Client for interacting with the POEditor API.
     /// Provides methods to authenticate, list projects, export translations, and download files.
@@ -79,7 +92,7 @@ namespace Localisation
         /// A task that completes with an <see cref="ExportResponse"/>
         /// containing download information and metadata.
         /// </returns>
-        public async Awaitable<Result<ExportResponse, Exception>> ExportLanguage(string language, string projectId)
+        public async Task<Result<ExportResponse, Exception>> ExportLanguage(string language, string projectId)
         {
             var path = $"/projects/export";
 
@@ -96,7 +109,11 @@ namespace Localisation
                 .SetTransformer(FormEncodedTransformer.Transform)
                 .SetHeader("Content-Type", "application/x-www-form-urlencoded")
                 .SetBody(arguments)
-                .Send();
+                .Send()
+                #if UNITY_EDITOR
+                .AsTask()
+                .ConfigureAwait(false);
+                #endif
             
             try
             {
