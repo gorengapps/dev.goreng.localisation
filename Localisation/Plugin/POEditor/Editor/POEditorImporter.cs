@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,12 +27,11 @@ namespace Localisation.Editor.Plugin
             public string TempPath { get; set; } = "";
             public string ErrorMessage { get; set; } = "";
         }
-
-        [MenuItem("Framework/Import All Localisations from CLI (Runner)")]
-        public static void ImportAllFromCli_Wrapper()
+        
+        public static void ImportAllLanguages(Dictionary<string, string> validatedOptions)
         {
             Debug.Log("Starting CLI import process with Coroutines...");
-            var coroutine = ImportAllFromCliCoroutine();
+            var coroutine = ImportAllFromCliCoroutine(validatedOptions);
             bool isRunning = true;
 
             // This loop manually drives the coroutine's execution.
@@ -45,7 +45,6 @@ namespace Localisation.Editor.Plugin
                     {
                         isRunning = false;
                         Debug.Log("CLI import process completed successfully.");
-                        EditorApplication.Exit(0);
                     }
                 }
                 catch (Exception e)
@@ -54,25 +53,23 @@ namespace Localisation.Editor.Plugin
                     isRunning = false;
                     Debug.LogError("CLI import process failed with an exception.");
                     Debug.LogException(e);
-                    EditorApplication.Exit(1);
                 }
                 // Sleep to prevent the loop from consuming 100% CPU.
                 Thread.Sleep(100);
             }
         }
         
-        private static IEnumerator ImportAllFromCliCoroutine()
+        private static IEnumerator ImportAllFromCliCoroutine(Dictionary<string, string> validatedOptions)
         {
-            // The main logic is now inside a standard IEnumerator coroutine.
-            var args = Environment.GetCommandLineArgs();
-            var apiKey = GetArgument(args, "-poeditor-api-key");
-            var projectId = GetArgument(args, "-poeditor-project-id");
+
+            var apiKey = validatedOptions["poeditor-api-key"];
+            var projectId = validatedOptions["poeditor-project-id"];
             var stringTableName = "Strings";
+            
 
             if (string.IsNullOrEmpty(apiKey) || string.IsNullOrEmpty(projectId))
             {
                 Debug.LogError("Missing required arguments. Use -poeditor-api-key and -poeditor-project-id");
-                EditorApplication.Exit(1);
                 yield break; // End the coroutine
             }
 
