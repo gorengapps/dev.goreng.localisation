@@ -61,11 +61,9 @@ namespace Localisation.Editor.Plugin
         
         private static IEnumerator ImportAllFromCliCoroutine(Dictionary<string, string> validatedOptions)
         {
-
             var apiKey = validatedOptions["poeditor-api-key"];
             var projectId = validatedOptions["poeditor-project-id"];
             var stringTableName = "Strings";
-            
 
             if (string.IsNullOrEmpty(apiKey) || string.IsNullOrEmpty(projectId))
             {
